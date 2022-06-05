@@ -53,6 +53,7 @@ function App() {
         ref={audioRef}
         src={currentSong.audio}
         onEnded={songEndedHandler}
+        preload="metadata"
         ></audio>
     </div>
   );
