@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { BsPlayFill, BsFillPauseFill } from "react-icons/bs";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
