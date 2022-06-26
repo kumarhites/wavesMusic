@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 //components
 import Song from './components/Song'
 import Player from './components/Player'
@@ -8,15 +8,25 @@ import {playAudio} from '../src/util'
 //styles
 import './styles/app.scss'
 // Import utils
-import data from './data';
+// import data from './data';
+//api
+const options = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': 'f3eb4c1a78msh2d89f060ea21644p174ee3jsna5ac473991db',
+		'X-RapidAPI-Host': 'ncsmusic.p.rapidapi.com'
+	}
+}
+
+const API_URL = 'https://ncsmusic.p.rapidapi.com/';
 
 
 function App() {
   // Ref
   const audioRef = useRef(null);
   // state
-  const [songs, setSongs] = useState(data());
-  const [currentSong, setCurrentSong] = useState(songs[0]);
+  const [songs, setSongs] = useState([]);
+  const [currentSong, setCurrentSong] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [songInfo, setSongInfo] = useState({
     currentTime: 0,
@@ -41,6 +51,17 @@ function App() {
     setCurrentSong(songs[(currentIndex + 1) % songs.length]);
     await playAudio(isPlaying, audioRef);
   }
+  useEffect(() => {
+    const fetchSongs = async () => {
+      const response = await fetch(API_URL, options);
+      const songsData = await response.json();
+      setSongs(songsData);
+      setCurrentSong(songsData[0])
+    }
+    fetchSongs();
+  },[])
+
+
   return (
     <div className={`App ${libraryStatus ? 'library-active' : ''}`}>
       <Nav libraryStatus={libraryStatus} setLibraryStatus={setLibraryStatus} />
@@ -51,7 +72,7 @@ function App() {
         onLoadedMetadata={timeUpdateHandler}
         onTimeUpdate={timeUpdateHandler}
         ref={audioRef}
-        src={currentSong.audio}
+        src={currentSong.url}
         onEnded={songEndedHandler}
         preload="metadata"
         ></audio>
